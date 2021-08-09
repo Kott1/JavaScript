@@ -1,0 +1,48 @@
+.menu {
+    background: #222222;
+    padding: 18px 0;
+}
+
+.container--menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    margin-right: 40px;
+    width: 44px;
+    text-decoration: none;
+}
+
+.menu_bars {
+    padding-right: 30px;
+    text-decoration: none;
+}
+
+.user {
+    padding-right: 30px;
+    text-decoration: none;
+    width: 29px;
+}
+
+.cart-button {
+    border: none;
+    background-color: #222222;
+    display: inline;
+    padding: 0;
+}
+
+.goods-list {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 30px;
+}
+
+.goods-item {
+    text-align: center;
+    font-size: 30px;
+    font-family: arial, sans-serif;
+    color: #222222;
+    box-shadow: 4px 4px 8px 7px rgba(34, 60, 80, 0.2);
+}
