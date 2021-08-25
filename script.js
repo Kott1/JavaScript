@@ -1,23 +1,21 @@
-function makeGETRequest(url, callback) {
+function makeGETRequest(url) {
     return new Promise((resolve) => {
-        setTimeout(() => {
-            let xhr;
+        let xhr;
 
-            if (window.XMLHttpRequest) {
-                xhr = new XMLHttpRequest();
-            } else if (window.ActiveXObject) {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        if (window.XMLHttpRequest) {
+            xhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                resolve(xhr.responseText);
             }
+        }
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    resolve(callback(xhr.responseText));
-                }
-            }
-
-            xhr.open('GET', url, true);
-            xhr.send();
-        }, 2000);
+        xhr.open('GET', url, true);
+        xhr.send();
     })
 }
 
@@ -33,27 +31,39 @@ class GoodsItem {
     }
 }
 
+const searchButton = document.querySelector(".search-button");
+const searchInput = document.querySelector(".goods-search");
+
+searchButton.addEventListener('click', (e) => {
+    const value = searchInput.value;
+    console.log(value);
+    list.filterGoods(value);
+});
+
 class GoodsList {
     constructor() {
         this.goods = [];
+        this.filteredGoods = [];
     }
-    fetchGoods(cb) {
-        const prom = new Promise((resolve) => {
-            resolve(makeGETRequest(`${url}/catalogData.json`, (goods) => {
-                this.goods = JSON.parse(goods);
-                console.log(goods);
-                cb();
-            }))
-        })
-        prom.then(this.render());
+    fetchGoods() {
+        return makeGETRequest(`${url}/catalogData.json`);
     }
-    render() {
-        let listHtml = '';
-        this.goods.map(good => {
+    render(filteredGoods) {
+        const goodsList = document.querySelector(".goods-list")
+        filteredGoods.forEach(good => {
             const goodItem = new GoodsItem(good.product_name, good.price);
-            listHtml += goodItem.render();
+            goodsList.insertAdjacentHTML("beforeend", goodItem);
         });
-        document.querySelector('.goods-list').innerHTML = listHtml;
+    }
+    filterGoods(value) {
+        console.log(this.goods);
+        const regexp = new RegExp(value, 'i');
+        this.filteredGoods = this.goods.filter(good => {
+            regexp.test(good.product_name)
+            console.log(good);
+        });
+        console.log(this.filteredGoods)
+        this.render(this.filteredGoods);
     }
     countPrice() {
         //...
@@ -61,8 +71,8 @@ class GoodsList {
 }
 
 const list = new GoodsList();
-list.fetchGoods(() => {
-    list.render();
+list.fetchGoods().then((goods) => {
+    list.goods = JSON.parse(goods);
 });
 list.countPrice();
 

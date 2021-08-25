@@ -9,6 +9,22 @@
     align-items: center;
 }
 
+.menu__logo-wrp {
+    display: flex;
+    align-items: center;
+}
+
+.goods-search {
+    padding: 3px;
+    outline: none;
+}
+
+.search-button {
+    border: none;
+    background-color: #222222;
+    cursor: pointer;
+}
+
 .logo {
     margin-right: 40px;
     width: 44px;
