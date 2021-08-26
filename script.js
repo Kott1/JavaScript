@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 function makeGETRequest(url) {
     return new Promise((resolve) => {
+=======
+function makeGETRequest(url, callback) {
+    return new Promise(() => {
+>>>>>>> Stashed changes
         let xhr;
 
         if (window.XMLHttpRequest) {
@@ -10,7 +15,11 @@ function makeGETRequest(url) {
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
+<<<<<<< Updated upstream
                 resolve(xhr.responseText);
+=======
+                callback(xhr.responseText);
+>>>>>>> Stashed changes
             }
         }
 
@@ -45,8 +54,16 @@ class GoodsList {
         this.goods = [];
         this.filteredGoods = [];
     }
+<<<<<<< Updated upstream
     fetchGoods() {
         return makeGETRequest(`${url}/catalogData.json`);
+=======
+    fetchGoods(cb) {
+        makeGETRequest(`${url}/catalogData.json`, (goods) => {
+            this.goods = JSON.parse(goods);
+            cb();
+        });
+>>>>>>> Stashed changes
     }
     render(filteredGoods) {
         const goodsList = document.querySelector(".goods-list")
@@ -71,9 +88,13 @@ class GoodsList {
 }
 
 const list = new GoodsList();
+<<<<<<< Updated upstream
 list.fetchGoods().then((goods) => {
     list.goods = JSON.parse(goods);
 });
+=======
+list.fetchGoods();
+>>>>>>> Stashed changes
 list.countPrice();
 
 class Cart {
