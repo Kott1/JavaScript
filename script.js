@@ -1,98 +1,68 @@
-function makeGETRequest(url) {
-    return new Promise((resolve) => {
-        let xhr;
-
-        if (window.XMLHttpRequest) {
-            xhr = new XMLHttpRequest();
-        } else if (window.ActiveXObject) {
-            xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                resolve(JSON.parse(xhr.responseText));
-            }
-        }
-
-        xhr.open('GET', url, true);
-        xhr.send();
-    })
-}
-
 const url = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
 
-class GoodsItem {
-    constructor(product_name, price) {
-        this.product_name = product_name;
-        this.price = price;
-    }
-    render() {
-        return `<div class="goods-item"><h3>${this.product_name}</h3><p>${this.price}</p></div>`;
-    }
-}
+const app = new Vue({
+    el: '#app',
+    data: {
+        goods: [],
+        filteredGoods: [],
+        searchLine: '',
+        isMainHide: false,
+        onError: false,
+        isCartHide: true
+    },
+    methods: {
+        makeGETRequest(url, callback) {
+            var xhr;
 
-const searchButton = document.querySelector(".search-button");
-const searchInput = document.querySelector(".goods-search");
+            if (window.XMLHttpRequest) {
+                xhr = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
 
-searchButton.addEventListener('click', (e) => {
-    const value = searchInput.value;
-    list.filterGoods(value);
-});
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    callback(xhr.responseText);
+                }
+            }
 
-class GoodsList {
-    constructor() {
-        this.goods = [];
-        this.filteredGoods = [];
-    }
-    fetchGoods() {
-        return makeGETRequest(`${url}/catalogData.json`);
-    }
-    render(filteredGoods) {
-        const goodsList = document.querySelector(".goods-list")
-        filteredGoods.forEach(good => {
-            const goodItem = new GoodsItem(good.product_name, good.price);
-            goodsList.insertAdjacentHTML("beforeend", goodItem);
+            xhr.open('GET', url, true);
+            xhr.send();
+        },
+        filterGoods() {
+            const regexp = new RegExp(this.searchLine, 'i');
+            this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
+            if (this.filteredGoods == 0) {
+                this.onError = true;
+            } else {
+                this.onError = false;
+            }
+        },
+        isVisibleCart() {
+            this.isMainHide = true;
+            this.isCartHide = false;
+        },
+        isVisibleMain() {
+            this.isMainHide = false;
+            this.isCartHide = true;
+        },
+        addToCart() {
+            //...
+        },
+        deleteFromCart() {
+            //...
+        },
+        countPrice() {
+            //...
+        }
+    },
+    mounted() {
+        this.makeGETRequest(`${url}/catalogData.json`, (goods) => {
+            this.goods = JSON.parse(goods);
+            this.filteredGoods = JSON.parse(goods);
         });
     }
-    filterGoods(value) {
-        const regexp = new RegExp(value, 'i');
-        this.filteredGoods = this.goods.filter(good => {
-            regexp.test(good.product_name)
-        });
-        this.render(this.filteredGoods);
-    }
-    countPrice() {
-        //...
-    }
-}
-
-const list = new GoodsList();
-list.fetchGoods().then((data) => {
-    list.goods = data;
 });
-list.countPrice();
-
-class Cart {
-    constructor() {
-        this.items = [];
-    }
-    addToCart() {
-        //...
-    }
-    deleteFromCart() {
-        //...
-    }
-    getCartList() {
-        makeGETRequest(`${url}/getBasket.json`, (items) => {
-            this.items = JSON.parse(items);
-        })
-    }
-}
-
-const cart = new Cart();
-cart.addToCart();
-cart.deleteFromCart();
-cart.getCartList();
 
 class CartItem {
     constructor(item) {

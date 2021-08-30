@@ -10,16 +10,16 @@
 </head>
 
 <body>
-    <header>
+    <div id="app">
         <header>
             <nav class="menu">
                 <div class="container container--menu">
                     <div class="menu__logo-wrp">
-                        <a href="#" class="logo">
+                        <a @click="isVisibleMain" href="index.html" class="logo">
                             <img src="images/logo.png" alt="logo" width="44" height="38">
                         </a>
-                        <input type="text" class="goods-search" />
-                        <button class="search-button" type="button">
+                        <input type="text" class="goods-search" v-model="searchLine">
+                        <button @click="filterGoods" class="search-button">
                             <img src="images/search.svg" alt="search">
                         </button>
                     </div>
@@ -30,17 +30,38 @@
                         <a href="reg.html" class="user">
                             <img src="images/user.svg" alt="user">
                         </a>
-                        <button class="cart-button" type="button">
+                        <button @click="isVisibleCart" class="cart-button" type="button">
                             <img src="images/cart.svg" alt="cart">
                         </button>
                     </div>
                 </div>
             </nav>
         </header>
-    </header>
-    <main>
-        <div class="goods-list"></div>
-    </main>
+        <main v-bind:class="{ hide: isMainHide }">
+            <div class="goods-list">
+                <div class="goods-item" v-for="good in filteredGoods">
+                    <h3 class="product_name">{{ good.product_name }}</h3>
+                    <p class="price">{{ good.price }}</p>
+                </div>
+                <p class="error_txt" v-bind:class="{error: onError}">Товаров нету</p>
+        </main>
+
+        <main v-bind:class="{hide: isCartHide}">
+            <h1 class="cart__tittle">Товары:</h1>
+            <div class="cart__items_wrp">
+                <div class="cart__info_wrp">
+                    <div class="cart__info">Количество:</div>
+                    <div class="cart__info">Цена:</div>
+                    <div class="cart__info">Название:</div>
+                    <div class="cart__info">ID:</div>
+                </div>
+                <div class="cart__item"></div>
+                <div class="cart__counter">Стоимость: </div>
+            </div>
+        </main>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script src="script.js"></script>
 </body>
 
