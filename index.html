@@ -18,10 +18,9 @@
                         <a @click="isVisibleMain" href="index.html" class="logo">
                             <img src="images/logo.png" alt="logo" width="44" height="38">
                         </a>
-                        <input type="text" class="goods-search" v-model="searchLine">
-                        <button @click="filterGoods" class="search-button">
-                            <img src="images/search.svg" alt="search">
-                        </button>
+                        <vue-input></vue-input>
+                        <search :goods="goods">
+                        </search>
                     </div>
                     <div class="menu__menu-wrp">
                         <a href="#" class="menu_bars">
@@ -38,15 +37,14 @@
             </nav>
         </header>
         <main v-bind:class="{ hide: isMainHide }">
-            <div class="goods-list">
-                <div class="goods-item" v-for="good in filteredGoods">
-                    <h3 class="product_name">{{ good.product_name }}</h3>
-                    <p class="price">{{ good.price }}</p>
-                </div>
+            <goods-list :goods="filteredGoods">
+                <goods-item>
+                </goods-item>
                 <p class="error_txt" v-bind:class="{error: onError}">Товаров нету</p>
+            </goods-list>
         </main>
 
-        <main v-bind:class="{hide: isCartHide}">
+        <main :class="{hide: isCartHide}">
             <h1 class="cart__tittle">Товары:</h1>
             <div class="cart__items_wrp">
                 <div class="cart__info_wrp">
@@ -55,7 +53,9 @@
                     <div class="cart__info">Название:</div>
                     <div class="cart__info">ID:</div>
                 </div>
-                <div class="cart__item"></div>
+                <cart__item-wrp :goods="filteredGoods">
+                    <cart__item></cart__item>
+                </cart__item-wrp>
                 <div class="cart__counter">Стоимость: </div>
             </div>
         </main>
