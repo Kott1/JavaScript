@@ -18,9 +18,7 @@
                         <a @click="isVisibleMain" href="index.html" class="logo">
                             <img src="images/logo.png" alt="logo" width="44" height="38">
                         </a>
-                        <vue-input></vue-input>
-                        <search :goods="goods">
-                        </search>
+                        <vue-form :value="goods"></vue-form>
                     </div>
                     <div class="menu__menu-wrp">
                         <a href="#" class="menu_bars">
@@ -37,9 +35,7 @@
             </nav>
         </header>
         <main v-bind:class="{ hide: isMainHide }">
-            <goods-list :goods="filteredGoods">
-                <goods-item>
-                </goods-item>
+            <goods-list :items="goods">
                 <p class="error_txt" v-bind:class="{error: onError}">Товаров нету</p>
             </goods-list>
         </main>
@@ -53,13 +49,12 @@
                     <div class="cart__info">Название:</div>
                     <div class="cart__info">ID:</div>
                 </div>
-                <cart__item-wrp :goods="filteredGoods">
+                <cart__item-wrp>
                     <cart__item></cart__item>
                 </cart__item-wrp>
                 <div class="cart__counter">Стоимость: </div>
             </div>
         </main>
-
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script src="script.js"></script>

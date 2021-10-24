@@ -1,16 +1,18 @@
 Vue.component('goods-list', {
-    props: ['goods'],
+    props: ['items'],
     template: `<div class="goods-list">
-    <goods-item v-for="good in goods" :good="good"></goods-item>
-    </div>`
+    <goods-item v-for="good in items" :good="good"></goods-item>
+    </div>`,
 });
+
+//@sendData="renderData"
 
 Vue.component('goods-item', {
     props: ['good'],
     template: `<div class="goods-item">
     <h3 class="product_name">{{ good.product_name }}</h3>
     <p class="price">{{ good.price }}</p>
-    <button>Добавить</button>
+    <button @>Добавить</button>
     </div>`,
     data: () => ({
     }),
@@ -20,46 +22,44 @@ Vue.component('goods-item', {
     }
 });
 
-Vue.component('vue-input', {
-    data: () => ({
-        searchLine: ''
-    }),
-    template: `<input type="text" class="goods-search" v-model="searchLine">`
-});
-
-Vue.component('search', {
-    props: ['goods'],
-    template: `<button class="search-button">
+Vue.component('vue-form', {
+    props: ["value"],
+    template: `<div>
+    <input type="text" class="goods-search" v-model="searchLine">
+    <button @click="filterGoods" class="search-button">
     <img src="images/search.svg" alt="search">
-    </button>`,
+    </button>
+    </div>`,
+    data: () => ({
+        searchLine: '',
+        goods: [],
+        filteredGoods: []
+    }),
     methods: {
         filterGoods() {
-            const regexp = new RegExp(this.searchLine, 'i');
-            this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
-            if (this.filteredGoods == 0) {
-                this.onError = true;
-            } else {
-                this.onError = false;
-            }
+            setTimeout(() => {
+                this.goods = this.value;
+                const regexp = new RegExp(this.searchLine, 'i');
+                this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
+                if (this.filteredGoods == 0) {
+                    this.onError = true;
+                } else {
+                    this.onError = false;
+                }
+                this.$emit('sendData', this.filteredGoods);
+            }, 1000);
         }
     }
 });
 
 Vue.component('cart__item-wrp', {
-    props: ['goods'],
     template: `<div>
-    <cart__item v-for="good in goods" :good="good"></cart__item>
-    </div>`,
-    methods: {
-        // renderCartItem() {
-
-        // }
-    }
+    <cart__item></cart__item>
+    </div>`
 });
 
 Vue.component('cart__item', {
-    props: ['good'],
-    template: `<div v-for="good in goods" :good="good">
+    template: `<div>
     <li></li>
     <li></li>
     <li></li>
@@ -67,20 +67,14 @@ Vue.component('cart__item', {
 </div>`
 })
 
-
-
-
-
-const url = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
-
 const app = new Vue({
     el: '#app',
     data: {
         goods: [],
-        filteredGoods: [],
         isMainHide: false,
         onError: false,
-        isCartHide: true
+        isCartHide: true,
+        url: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
     },
     methods: {
         makeGETRequest(url) {
@@ -102,6 +96,9 @@ const app = new Vue({
                 xhr.open('GET', url, true);
                 xhr.send();
             });
+        },
+        sendToList(item) {
+            console.log(item);
         },
         add() {
             console.log(1)
@@ -125,9 +122,8 @@ const app = new Vue({
         }
     },
     mounted() {
-        this.makeGETRequest(`${url}/catalogData.json`).then((data) => {
+        this.makeGETRequest(`${this.url}/catalogData.json`).then((data) => {
             this.goods = data;
-            this.filteredGoods = data;
         });
     }
 });
