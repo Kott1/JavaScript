@@ -1,8 +1,14 @@
 Vue.component('goods-list', {
-    props: ['items'],
+    props: ['items', 'filteredGoods'],
     template: `<div class="goods-list">
     <goods-item v-for="good in items" :good="good"></goods-item>
     </div>`,
+    data: () => ({
+        fGoods: this.filteredGoods
+    }),
+    methods: {
+
+    }
 });
 
 //@sendData="renderData"
@@ -26,28 +32,16 @@ Vue.component('vue-form', {
     props: ["value"],
     template: `<div>
     <input type="text" class="goods-search" v-model="searchLine">
-    <button @click="filterGoods" class="search-button">
+    <button @click="semit" class="search-button">
     <img src="images/search.svg" alt="search">
     </button>
     </div>`,
     data: () => ({
         searchLine: '',
-        goods: [],
-        filteredGoods: []
     }),
     methods: {
-        filterGoods() {
-            setTimeout(() => {
-                this.goods = this.value;
-                const regexp = new RegExp(this.searchLine, 'i');
-                this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
-                if (this.filteredGoods == 0) {
-                    this.onError = true;
-                } else {
-                    this.onError = false;
-                }
-                this.$emit('sendData', this.filteredGoods);
-            }, 1000);
+        semit: function () {
+            this.$emit('send-data', this.searchLine)
         }
     }
 });
@@ -71,6 +65,7 @@ const app = new Vue({
     el: '#app',
     data: {
         goods: [],
+        filteredGoods: [],
         isMainHide: false,
         onError: false,
         isCartHide: true,
@@ -97,8 +92,14 @@ const app = new Vue({
                 xhr.send();
             });
         },
-        sendToList(item) {
-            console.log(item);
+        filterGoods(line) {
+            const regexp = new RegExp(line, 'i');
+            this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
+            if (this.filteredGoods == 0) {
+                this.onError = true;
+            } else {
+                this.onError = false;
+            }
         },
         add() {
             console.log(1)

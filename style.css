@@ -18,6 +18,10 @@ body {
     align-items: center;
 }
 
+.goods-form {
+    display: flex;
+}
+
 .goods-search {
     padding: 3px;
     outline: none;
