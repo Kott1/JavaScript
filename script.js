@@ -1,13 +1,13 @@
 Vue.component('goods-list', {
-    props: ['items', 'filteredGoods'],
+    props: ['items', 'err'],
     template: `<div class="goods-list">
-    <goods-item v-for="good in items" :good="good"></goods-item>
+    <goods-item v-for="good in items" :good="good" @sendToList="semitToApp"></goods-item>
+    <vue-error v-if="err"></vue-error>
     </div>`,
-    data: () => ({
-        fGoods: this.filteredGoods
-    }),
     methods: {
-
+        semitToApp(good, isVisibleItem) {
+            this.$emit('cart-data', good, isVisibleItem)
+        }
     }
 });
 
@@ -18,15 +18,22 @@ Vue.component('goods-item', {
     template: `<div class="goods-item">
     <h3 class="product_name">{{ good.product_name }}</h3>
     <p class="price">{{ good.price }}</p>
-    <button @>Добавить</button>
+    <button @click="addToCart">Добавить</button>
     </div>`,
     data: () => ({
+        isVisibleItem: false
     }),
     methods: {
         addToCart() {
+            this.isVisibleItem = true;
+            this.$emit('sendToList', this.good, this.isVisibleItem);
         }
     }
 });
+
+Vue.component('vue-error', {
+    template: `<p class="error_txt">Такого товара нету или его нет в наличии</p>`
+})
 
 Vue.component('vue-form', {
     props: ["value"],
@@ -46,29 +53,36 @@ Vue.component('vue-form', {
     }
 });
 
-Vue.component('cart__item-wrp', {
-    template: `<div>
-    <cart__item></cart__item>
+Vue.component('cart-wrp', {
+    props: ['items', 'visible'],
+    template: `<div class="cart-wrp">
+    <cart-item v-if="visible" v-for="cart in items" :cart="cart"></cart-item>
     </div>`
 });
 
-Vue.component('cart__item', {
-    template: `<div>
-    <li></li>
-    <li></li>
-    <li></li>
-    <li></li>
-</div>`
-})
+Vue.component('cart-item', {
+    props: ['cart'],
+    template: `<div class="cart-item">
+    <h3 class="product_name">{{ cart.product_name }}</h3>
+    <p class="price">{{ cart.price }}</p>
+    <button @click="f">Удалить</button>
+    </div>`,
+    methods: {
+        //...
+    }
+});
+
 
 const app = new Vue({
     el: '#app',
     data: {
         goods: [],
         filteredGoods: [],
-        isMainHide: false,
+        cartData: [],
+        isVisibleMain: true,
         onError: false,
-        isCartHide: true,
+        isVisibleCart: false,
+        isVisibleItem: false,
         url: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
     },
     methods: {
@@ -95,22 +109,24 @@ const app = new Vue({
         filterGoods(line) {
             const regexp = new RegExp(line, 'i');
             this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
-            if (this.filteredGoods == 0) {
+            if (this.filteredGoods.length == 0) {
                 this.onError = true;
             } else {
                 this.onError = false;
             }
         },
-        add() {
-            console.log(1)
+        sendToCart(item, vis) {
+            this.cartData.push(item);
+            this.isVisibleItem = vis;
+            console.log(this.isVisibleItem)
         },
-        isVisibleCart() {
-            this.isMainHide = true;
-            this.isCartHide = false;
+        visibleCart() {
+            this.isVisibleMain = false;
+            this.isVisibleCart = true;
         },
-        isVisibleMain() {
-            this.isMainHide = false;
-            this.isCartHide = true;
+        visibleMain() {
+            this.isVisibleMain = true;
+            this.isVisibleCart = false;
         },
         addToCart() {
             //...
@@ -125,6 +141,7 @@ const app = new Vue({
     mounted() {
         this.makeGETRequest(`${this.url}/catalogData.json`).then((data) => {
             this.goods = data;
+            this.filteredGoods = data;
         });
     }
 });

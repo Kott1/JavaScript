@@ -15,7 +15,7 @@
             <nav class="menu">
                 <div class="container container--menu">
                     <div class="menu__logo-wrp">
-                        <a @click="isVisibleMain" href="index.html" class="logo">
+                        <a @click="visibleMain" href="#" class="logo">
                             <img src="images/logo.png" alt="logo" width="44" height="38">
                         </a>
                         <vue-form :value="goods" @send-data="filterGoods" class="goods-form"></vue-form>
@@ -27,33 +27,21 @@
                         <a href="reg.html" class="user">
                             <img src="images/user.svg" alt="user">
                         </a>
-                        <button @click="isVisibleCart" class="cart-button" type="button">
+                        <button @click="visibleCart" class="cart-button" type="button">
                             <img src="images/cart.svg" alt="cart">
                         </button>
                     </div>
                 </div>
             </nav>
         </header>
-        <main v-bind:class="{ hide: isMainHide }">
-            <goods-list :items="goods">
-                <p class="error_txt" v-bind:class="{error: onError}">Товаров нету</p>
+        <main v-if="isVisibleMain">
+            <goods-list :items="filteredGoods" :err="onError" @cart-data="sendToCart">
             </goods-list>
         </main>
 
-        <main :class="{hide: isCartHide}">
+        <main v-if="isVisibleCart">
             <h1 class="cart__tittle">Товары:</h1>
-            <div class="cart__items_wrp">
-                <div class="cart__info_wrp">
-                    <div class="cart__info">Количество:</div>
-                    <div class="cart__info">Цена:</div>
-                    <div class="cart__info">Название:</div>
-                    <div class="cart__info">ID:</div>
-                </div>
-                <cart__item-wrp>
-                    <cart__item></cart__item>
-                </cart__item-wrp>
-                <div class="cart__counter">Стоимость: </div>
-            </div>
+            <cart-wrp :items="cartData" :visible="isVisibleItem"></cart-wrp>
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
